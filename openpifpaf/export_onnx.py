@@ -49,25 +49,38 @@ def image_size_warning(basenet_stride, input_w, input_h):
         )
 
 
-def apply(model, outfile, verbose=True, input_w=129, input_h=97):
+def apply(model, outfile, verbose=True, input_w=129, input_h=97, static=False):
     image_size_warning(model.base_net.stride, input_w, input_h)
 
     # configure
     openpifpaf.network.heads.CompositeField3.inplace_ops = False
-
+    input_names=['input_batch']
+    output_names=['cif', 'caf']
     dummy_input = torch.randn(1, 3, input_h, input_w)
 
-    torch.onnx.export(
-        model, dummy_input, outfile, verbose=verbose,
-        input_names=['input_batch'], output_names=['cif', 'caf'],
-        # keep_initializers_as_inputs=True,
-        opset_version=11,
-        do_constant_folding=True,
-        dynamic_axes={
-            "input": {0: 'dynamic'},
-            "cif": {0: 'dynamic'},
-            "caf": {0: 'dynamic'}}
-    )
+    if static:
+        torch.onnx.export(
+            model, dummy_input, outfile, verbose=verbose,
+            input_names=input_names, output_names=output_names,
+            # keep_initializers_as_inputs=True,
+            opset_version=11,
+            do_constant_folding=True)
+    else:
+        dynamic_axes={}
+        for tensor in input_names+output_names:
+            dynamic_axes[tensor] = {0: 'dynamic'}
+
+        torch.onnx.export(
+            model, dummy_input, outfile, verbose=verbose,
+            input_names=input_names, output_names=output_names,
+            # keep_initializers_as_inputs=True,
+            opset_version=11,
+            do_constant_folding=True,
+            dynamic_axes=dynamic_axes)
+
+    if onnx is not None:
+        # Keep only the actual input(s) and outputs ( = remove caf25 branch)
+        onnx.utils.extract_model(outfile, outfile, input_names, output_names)
 
 
 def optimize(infile, outfile=None):
@@ -132,24 +145,26 @@ def main():
     parser.add_argument('--polish', dest='polish', default=False, action='store_true',
                         help='runs checker, optimizer and shape inference')
     parser.add_argument('--optimize', dest='optimize', default=False, action='store_true')
+    parser.add_argument('--static', dest='static', default=False, action='store_true')
     parser.add_argument('--check', dest='check', default=False, action='store_true')
     parser.add_argument('--input-width', type=int, default=129)
     parser.add_argument('--input-height', type=int, default=97)
     args = parser.parse_args()
 
-    openpifpaf.network.Factory.configure(args)
+    with torch.no_grad():
+        openpifpaf.network.Factory.configure(args)
 
-    model, _ = openpifpaf.network.Factory().factory()
+        model, _ = openpifpaf.network.Factory().factory()
 
-    apply(model, args.outfile, input_w=args.input_width, input_h=args.input_height)
-    if args.simplify:
-        simplify(args.outfile)
-    if args.optimize:
-        optimize(args.outfile)
-    if args.polish:
-        polish(args.outfile)
-    if args.check:
-        check(args.outfile)
+        apply(model, args.outfile, input_w=args.input_width, input_h=args.input_height, static=args.static)
+        if args.simplify:
+            simplify(args.outfile)
+        if args.optimize:
+            optimize(args.outfile)
+        if args.polish:
+            polish(args.outfile)
+        if args.check:
+            check(args.outfile)
 
 
 if __name__ == '__main__':
