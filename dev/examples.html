@@ -334,7 +334,7 @@ For more accurate results, try <code class="docutils literal notranslate"><span 
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%</span><span class="k">bash</span>
-python -m openpifpaf.predict coco/000000188465.jpg --image-output --long-edge=1025
+python -m openpifpaf.predict coco/000000188465.jpg --image-output --long-edge=1025 --image-min-dpi=200 --show-file-extension=jpeg
 </pre></div>
 </div>
 </div>
@@ -347,12 +347,22 @@ INFO:__main__:batch 0: coco/000000188465.jpg
 </div>
 </div>
 </div>
-<p><img alt="predicted" src="_images/000000188465.jpg.predictions.png" /><br />
-Image credit: <a class="reference external" href="https://www.flickr.com/photos/jelonekphotography/4593328722/">Photo</a> by Brian Jelonek shared under <a class="reference external" href="https://creativecommons.org/licenses/by/2.0/">CC-BY-2.0</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">IPython</span>
+<span class="n">IPython</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;coco/000000188465.jpg.predictions.jpeg&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/examples_2_0.jpg" src="_images/examples_2_0.jpg" />
+</div>
+</div>
+<p>Image credit: <a class="reference external" href="https://www.flickr.com/photos/jelonekphotography/4593328722/">Photo</a> by Brian Jelonek shared under <a class="reference external" href="https://creativecommons.org/licenses/by/2.0/">CC-BY-2.0</a>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%</span><span class="k">bash</span>
-python -m openpifpaf.predict coco/000000114907.jpg --image-output
+python -m openpifpaf.predict coco/000000114907.jpg --image-output --image-min-dpi=200 --show-file-extension=jpeg
 </pre></div>
 </div>
 </div>
@@ -365,12 +375,21 @@ INFO:__main__:batch 0: coco/000000114907.jpg
 </div>
 </div>
 </div>
-<p><img alt="predicted" src="_images/000000114907.jpg.predictions.png" /><br />
-Image credit: <a class="reference external" href="https://www.flickr.com/photos/fortrucker/7825237468/">Photo</a> by Fort Rucker shared under <a class="reference external" href="https://creativecommons.org/licenses/by/2.0/">CC-BY-2.0</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">IPython</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;coco/000000114907.jpg.predictions.jpeg&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/examples_5_0.jpg" src="_images/examples_5_0.jpg" />
+</div>
+</div>
+<p>Image credit: <a class="reference external" href="https://www.flickr.com/photos/fortrucker/7825237468/">Photo</a> by Fort Rucker shared under <a class="reference external" href="https://creativecommons.org/licenses/by/2.0/">CC-BY-2.0</a>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%</span><span class="k">bash</span>
-python -m openpifpaf.predict coco/000000147740.jpg --image-output
+python -m openpifpaf.predict coco/000000147740.jpg --image-output --image-min-dpi=200 --show-file-extension=jpeg
 </pre></div>
 </div>
 </div>
@@ -383,12 +402,21 @@ INFO:__main__:batch 0: coco/000000147740.jpg
 </div>
 </div>
 </div>
-<p><img alt="predicted" src="_images/000000147740.jpg.predictions.png" /><br />
-Image credit: <a class="reference external" href="https://www.flickr.com/photos/cumidanciki/8026451116/">Photo</a> by <a class="reference external" href="http://CCFoodTravel.com">CCFoodTravel.com</a> shared under <a class="reference external" href="https://creativecommons.org/licenses/by/2.0/">CC-BY-2.0</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">IPython</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;coco/000000147740.jpg.predictions.jpeg&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/examples_8_0.jpg" src="_images/examples_8_0.jpg" />
+</div>
+</div>
+<p>Image credit: <a class="reference external" href="https://www.flickr.com/photos/cumidanciki/8026451116/">Photo</a> by <a class="reference external" href="http://CCFoodTravel.com">CCFoodTravel.com</a> shared under <a class="reference external" href="https://creativecommons.org/licenses/by/2.0/">CC-BY-2.0</a>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%</span><span class="k">bash</span>
-python -m openpifpaf.predict coco/000000541055.jpg --image-output
+python -m openpifpaf.predict coco/000000541055.jpg --image-output --image-min-dpi=200 --show-file-extension=jpeg
 </pre></div>
 </div>
 </div>
@@ -401,14 +429,23 @@ INFO:__main__:batch 0: coco/000000541055.jpg
 </div>
 </div>
 </div>
-<p><img alt="predicted" src="_images/000000541055.jpg.predictions.png" /><br />
-Image credit: <a class="reference external" href="https://www.flickr.com/photos/12407269&#64;N07/3465325303/">Photo</a> by Jarrod Doll shared under <a class="reference external" href="https://creativecommons.org/licenses/by/2.0/">CC-BY-2.0</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">IPython</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;coco/000000541055.jpg.predictions.jpeg&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/examples_11_0.jpg" src="_images/examples_11_0.jpg" />
+</div>
+</div>
+<p>Image credit: <a class="reference external" href="https://www.flickr.com/photos/12407269&#64;N07/3465325303/">Photo</a> by Jarrod Doll shared under <a class="reference external" href="https://creativecommons.org/licenses/by/2.0/">CC-BY-2.0</a>.</p>
 <div class="section" id="debug-outputs">
 <h2>Debug Outputs<a class="headerlink" href="#debug-outputs" title="Permalink to this headline">¶</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%</span><span class="k">bash</span>
-python -m openpifpaf.predict coco/000000541055_cropped.jpeg --image-output --debug-indices cif:5 cifhr:5 caf:5 --save-all=coco_debug_example --image-height=6 --image-min-dpi=200 --show-file-extension=jpeg
+python -m openpifpaf.predict coco/000000541055_cropped.jpeg --image-output --debug-indices cif:5 cifhr:5 caf:5 --save-all=coco_debug_example --image-min-dpi=200 --show-file-extension=jpeg
 </pre></div>
 </div>
 </div>
@@ -421,13 +458,57 @@ INFO:__main__:batch 0: coco/000000541055_cropped.jpeg
 </div>
 </div>
 </div>
-<p><img alt="CIF_c" src="_images/0001.jpeg" />
-<img alt="CIF_r" src="_images/0002.jpeg" />
-<img alt="CIF_hr" src="_images/0005.jpeg" />
-Image credit: <a class="reference external" href="https://www.flickr.com/photos/12407269&#64;N07/3465325303/">Photo</a> by Jarrod Doll shared under <a class="reference external" href="https://creativecommons.org/licenses/by/2.0/">CC-BY-2.0</a>.</p>
-<p><img alt="CAF_c" src="_images/0003.jpeg" />
-<img alt="CAF_r" src="_images/0004.jpeg" />
-Image credit: <a class="reference external" href="https://www.flickr.com/photos/12407269&#64;N07/3465325303/">Photo</a> by Jarrod Doll shared under <a class="reference external" href="https://creativecommons.org/licenses/by/2.0/">CC-BY-2.0</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">IPython</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;coco_debug_example/0001.jpeg&#39;</span><span class="p">)</span>  <span class="c1"># cif:5:confidence</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/examples_15_0.jpg" src="_images/examples_15_0.jpg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">IPython</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;coco_debug_example/0002.jpeg&#39;</span><span class="p">)</span>  <span class="c1"># cif:5:regression</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/examples_16_0.jpg" src="_images/examples_16_0.jpg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">IPython</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;coco_debug_example/0005.jpeg&#39;</span><span class="p">)</span>  <span class="c1"># cifhr:5</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/examples_17_0.jpg" src="_images/examples_17_0.jpg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">IPython</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;coco_debug_example/0003.jpeg&#39;</span><span class="p">)</span>  <span class="c1"># caf:5:confidence</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/examples_18_0.jpg" src="_images/examples_18_0.jpg" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">IPython</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;coco_debug_example/0004.jpeg&#39;</span><span class="p">)</span>  <span class="c1"># caf:5:regression</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/examples_19_0.jpg" src="_images/examples_19_0.jpg" />
+</div>
+</div>
+<p>Image credit: <a class="reference external" href="https://www.flickr.com/photos/12407269&#64;N07/3465325303/">Photo</a> by Jarrod Doll shared under <a class="reference external" href="https://creativecommons.org/licenses/by/2.0/">CC-BY-2.0</a>.</p>
 </div>
 </div>
 
