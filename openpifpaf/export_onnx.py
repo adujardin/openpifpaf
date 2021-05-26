@@ -49,7 +49,13 @@ def image_size_warning(basenet_stride, input_w, input_h):
         )
 
 
-def apply(model, outfile, verbose=True, input_w=129, input_h=97, static=False):
+def apply(model,
+          outfile,
+          verbose=True,
+          input_w=129,
+          input_h=97,
+          static=False,
+          opset_version=11):
     image_size_warning(model.base_net.stride, input_w, input_h)
 
     # configure
@@ -60,27 +66,101 @@ def apply(model, outfile, verbose=True, input_w=129, input_h=97, static=False):
 
     if static:
         torch.onnx.export(
-            model, dummy_input, outfile, verbose=verbose,
-            input_names=input_names, output_names=output_names,
+            model,
+            dummy_input,
+            outfile,
+            verbose=verbose,
+            input_names=input_names,
+            output_names=output_names,
             # keep_initializers_as_inputs=True,
-            opset_version=11,
+            opset_version=opset_version,
             do_constant_folding=True)
     else:
         dynamic_axes={}
+        dynamic_label='dynamic'
         for tensor in input_names+output_names:
-            dynamic_axes[tensor] = {0: 'dynamic'}
+            dynamic_axes[tensor] = {0: dynamic_label}
 
         torch.onnx.export(
-            model, dummy_input, outfile, verbose=verbose,
-            input_names=input_names, output_names=output_names,
+            model,
+            dummy_input,
+            outfile,
+            verbose=verbose,
+            input_names=input_names,
+            output_names=output_names,
             # keep_initializers_as_inputs=True,
-            opset_version=11,
+            opset_version=opset_version,
             do_constant_folding=True,
             dynamic_axes=dynamic_axes)
 
     if onnx is not None:
         # Keep only the actual input(s) and outputs ( = remove caf25 branch)
         onnx.utils.extract_model(outfile, outfile, input_names, output_names)
+        if not static:
+            from onnx.tools import update_model_dims
+            onnx_model_dyn = onnx.load(outfile)
+            #https://github.com/onnx/onnx/blob/master/docs/PythonAPIOverview.md#updating-models-inputs-outputs-dimension-sizes-with-variable-length
+            variable_length_model = update_model_dims.update_inputs_outputs_dims(onnx_model_dyn, 
+                                                                                {input_names[0]: [dynamic_label]}, 
+                                                                                {output_names[0]: [dynamic_label], output_names[1]: [dynamic_label]}
+                                                                                )
+            onnx.save_model(variable_length_model, outfile)
+
+def add_value_info_for_constants(model : onnx.ModelProto):
+    """
+    Currently onnx.shape_inference doesn't use the shape of initializers, so add
+    that info explicitly as ValueInfoProtos.
+    Mutates the model.
+    Args:
+        model: The ModelProto to update.
+    """
+    # All (top-level) constants will have ValueInfos before IRv4 as they are all inputs
+    if model.ir_version < 4:
+        return
+
+    def add_const_value_infos_to_graph(graph : onnx.GraphProto):
+        inputs = {i.name for i in graph.input}
+        existing_info = {vi.name: vi for vi in graph.value_info}
+        for init in graph.initializer:
+            # Check it really is a constant, not an input
+            if init.name in inputs:
+                continue
+
+            # The details we want to add
+            elem_type = init.data_type
+            shape = init.dims
+
+            # Get existing or create new value info for this constant
+            vi = existing_info.get(init.name)
+            if vi is None:
+                vi = graph.value_info.add()
+                vi.name = init.name
+
+            # Even though it would be weird, we will not overwrite info even if it doesn't match
+            tt = vi.type.tensor_type
+            if tt.elem_type == onnx.TensorProto.UNDEFINED:
+                tt.elem_type = elem_type
+            if not tt.HasField("shape"):
+                # Ensure we set an empty list if the const is scalar (zero dims)
+                tt.shape.dim.extend([])
+                for dim in shape:
+                    tt.shape.dim.add().dim_value = dim
+
+        # Handle subgraphs
+        for node in graph.node:
+            for attr in node.attribute:
+                # Ref attrs refer to other attrs, so we don't need to do anything
+                if attr.ref_attr_name != "":
+                    continue
+
+                if attr.type == onnx.AttributeProto.GRAPH:
+                    add_const_value_infos_to_graph(attr.g)
+                if attr.type == onnx.AttributeProto.GRAPHS:
+                    for g in attr.graphs:
+                        add_const_value_infos_to_graph(g)
+
+    add_const_value_infos_to_graph(model.graph)
+    return model
 
 
 def optimize(infile, outfile=None):
@@ -90,8 +170,34 @@ def optimize(infile, outfile=None):
         infile = infile.replace('.onnx', '.unoptimized.onnx')
         shutil.copyfile(outfile, infile)
 
+    all_passes = onnx.optimizer.get_available_passes()
+    print("Available optimization passes:")
+    for p in all_passes:
+        print('\t{}'.format(p))
+    print()
+    #passes = ['fuse_consecutive_transposes', 'fuse_bn_into_conv', 'fuse_add_bias_into_conv']
+    passes = [  'fuse_add_bias_into_conv',
+                'fuse_bn_into_conv']
+
     model = onnx.load(infile)
-    optimized_model = onnx.optimizer.optimize(model)
+    onnx.checker.check_model(model)
+    if False:
+        inferred_model = onnx.shape_inference.infer_shapes(model)
+        inferred_model = add_value_info_for_constants(inferred_model)
+        for init in model.graph.initializer:
+            for value_info in model.graph.value_info:
+                if init.name == value_info.name:
+                    inferred_model.graph.input.append(value_info)
+        print(inferred_model.graph.value_info)
+        print(onnx.helper.printable_graph(inferred_model.graph))
+        optimized_model = onnx.optimizer.optimize(inferred_model, passes=['fuse_bn_into_conv'])
+    else:
+        # https://github.com/onnx/onnx/issues/3219#issuecomment-761618519
+        optimized_model = onnx.optimizer.optimize(model, passes)
+    #optimized_model = onnx.optimizer.optimize(model, passes)
+    print('The model after optimization:\n\n{}'.format(onnx.helper.printable_graph(optimized_model.graph)))
+    onnx.checker.check_model(optimized_model)
+
     onnx.save(optimized_model, outfile)
 
 
